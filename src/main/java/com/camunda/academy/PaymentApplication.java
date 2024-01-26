@@ -1,10 +1,9 @@
 package com.camunda.academy;
 
+import java.time.Duration;
 import java.util.Scanner;
 
-import com.camunda.academy.handler.YourJobHandler;
-import com.camunda.academy.services.CreditCardService;
-import com.camunda.academy.services.CustomerService;
+import com.camunda.academy.handler.PDFCreatorHandler;
 
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.worker.JobWorker;
@@ -14,11 +13,16 @@ import io.camunda.zeebe.client.impl.oauth.OAuthCredentialsProviderBuilder;
 public class PaymentApplication {
 
 	// Zeebe Client Credentials
-	private static final String ZEEBE_ADDRESS = "XXXXXXXXXXXX.XXXX.zeebe.camunda.io";
-	private static final String ZEEBE_CLIENT_ID = "XXXXXXXXXXXX";
-	private static final String ZEEBE_CLIENT_SECRET = "XXXXXXXXXXXXXXXXXXXXXXXX";
-	private static final String ZEEBE_AUTHORIZATION_SERVER_URL = "https://login.cloud.camunda.io/oauth/token";
-	private static final String ZEEBE_TOKEN_AUDIENCE = "zeebe.camunda.io";       
+    private static final String ZEEBE_ADDRESS = "c7e94005-c52d-40f2-b636-2f064700ac54.dsm-1.zeebe.camunda.io:443";
+    private static final String ZEEBE_CLIENT_ID = "Et6udCeUudspLu4xpERF1cSr3ObPM5T4";
+    private static final String ZEEBE_CLIENT_SECRET = "FJEq.H4BCFU-Tz~7ipoGaVxPIrk9VDQgonjYzLn9MaxbDa1XAWkPMYrbuVY2T~gf";
+    private static final String ZEEBE_AUTHORIZATION_SERVER_URL = "https://login.cloud.camunda.io/oauth/token";
+    private static final String ZEEBE_TOKEN_AUDIENCE = "zeebe.camunda.io";      
+
+	private static final int WORKER_TIMEOUT = 10;
+	private static final int NUM_INSTANCES = 1;
+
+	
 
 	public static void main(String[] args) {
 
@@ -36,12 +40,18 @@ public class PaymentApplication {
 
 			// Request the Cluster Topology
 			System.out.println("Connected to: " + client.newTopologyRequest().send().join());
+			
+			//Instance creator looper
+			startProcessInstances(client, NUM_INSTANCES);
 
 			// Start a Job Worker
+			
 			final JobWorker creditCardWorker = client.newWorker()
-				.jobType("YOUR_JOB_TYPE")
-				.handler(new YourJobHandler())
-				.open();
+				.jobType("pdfCreation")
+				.handler(new PDFCreatorHandler())
+				.timeout(Duration.ofSeconds(WORKER_TIMEOUT).toMillis())
+				.streamEnabled(false)
+                .open();
 
 			// Terminate the worker with an Integer input
 			Scanner sc = new Scanner(System.in);			
@@ -52,5 +62,17 @@ public class PaymentApplication {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void startProcessInstances(ZeebeClient zeebeClient, int numInstances) {
+		System.out.println("Starting "+ numInstances + " process instances...");
+		for (int i = 0; i < numInstances; i++) {
+			zeebeClient.newCreateInstanceCommand()
+			.bpmnProcessId("pdf-creator")
+			.latestVersion()
+			.send()				
+			.join(); // using blocking command
+		}
+		System.out.println("... " + numInstances + " instances created");
 	}
 }
