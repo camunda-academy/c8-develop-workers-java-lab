@@ -9,20 +9,44 @@ import io.camunda.zeebe.client.api.worker.JobHandler;
 
 public class PDFCreatorHandler implements JobHandler {
 
-	private JobCounter counter;
+	private JobCounter counter = new JobCounter();
 
 	@Override
 	public void handle(JobClient client, ActivatedJob job) throws Exception {
 		
-		System.out.println("Job handled: " + job.getType());
+		System.out.println("Handling job: " + job.getType());
+		
+		//Blocking Call
+		//blockingPDFServiceCall(client, job);
+
+		//Non Blocking Call
+		nonBlockingPDFServiceCall(client, job);
+		
+		System.out.println("Job completed: " + job.getType());
+	}
+
+	public void blockingPDFServiceCall(final JobClient client, final ActivatedJob job) throws Exception{
 		
 		PDFService PDFService = new PDFService();
 		PDFService.createPDF();
-		//counter.init();
+		counter.init();
 
-		// Complete the Job
+		// Complete the Job blocking
 		client.newCompleteCommand(job.getKey()).send().join();
-		//counter.inc();
-		System.out.println("Job completed: " + job.getType());
+
+		counter.inc();
+	}
+
+	public void nonBlockingPDFServiceCall(final JobClient client, final ActivatedJob job) throws Exception{
+		
+		PDFService PDFService = new PDFService();
+		PDFService.createPDF();
+		counter.init();
+
+		// Complete the Job nonblocking
+		client.newCompleteCommand(job.getKey()).send()
+			.thenApply(jobResponse -> { counter.inc(); return jobResponse;})
+			.exceptionally(t -> {throw new RuntimeException("Could not complete job: " + t.getMessage(), t);});
+		
 	}
 }

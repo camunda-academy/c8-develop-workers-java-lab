@@ -1,13 +1,10 @@
 package com.camunda.academy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class JobCounter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobCounter.class);
+    //private static final Logger LOGGER = LoggerFactory.getLogger(JobCounter.class);
 
     private AtomicInteger count = new AtomicInteger();
     private long startTimestamp;
@@ -19,14 +16,14 @@ public class JobCounter {
         endTimestamp = System.currentTimeMillis();
         int currentCount = count.addAndGet(1);
 
-        LOGGER.info("...completed (" + currentCount + "). " + getThroughputInfoFor(currentCount));
+        System.out.println("...completed (" + currentCount + "). " + getThroughputInfoFor(currentCount));
     }
 
     private String getThroughputInfoFor(int currentCount) {
 
         long timeDiff = (endTimestamp - startTimestamp) / 1000;
 
-        //System.out.println("startTimestamp: " + startTimestamp + " endTimestamp: " + endTimestamp + " diff: " + timeDiff);
+        System.out.println("startTimestamp: " + startTimestamp + " endTimestamp: " + endTimestamp + " diff: " + timeDiff);
 
         if (timeDiff == 0) {
             return "Current throughput (jobs/s ): " + currentCount;
