@@ -2,7 +2,7 @@ package com.camunda.academy.services;
 
 import java.time.Duration;
 
-import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.client.api.response.ActivatedJob;
 
 public class TrackingOrderService {
 

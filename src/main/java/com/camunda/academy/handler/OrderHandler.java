@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import com.camunda.academy.services.TrackingOrderService;
 
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.worker.JobClient;
-import io.camunda.zeebe.client.api.worker.JobHandler;
+import io.camunda.client.api.response.ActivatedJob;
+import io.camunda.client.api.worker.JobClient;
+import io.camunda.client.api.worker.JobHandler;
 
 public class OrderHandler implements JobHandler {
 
@@ -22,12 +22,12 @@ public class OrderHandler implements JobHandler {
         final Map<String, Object> inputVariables = job.getVariablesAsMap();
         final String orderId = (String) inputVariables.get("orderId");
 
-        logger.info("Order: {} Tracking status", orderId);        
-        trackingOrderService.trackOrderStatus(job);        
+        logger.info("Order: {} Tracking status", orderId);
+        trackingOrderService.trackOrderStatus(job);
         logger.info("Order: {} Status tracked successfully", orderId);
-        
+
         client.newCompleteCommand(job.getKey())
-            .send()
-            .join();
+                .send()
+                .join();
     }
 }
