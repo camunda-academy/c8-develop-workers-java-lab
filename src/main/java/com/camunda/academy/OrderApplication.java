@@ -25,11 +25,11 @@ public class OrderApplication {
 
     // Process instance creation
     private static final String PROCESS_ID = "orderProcess";
-    private static final int NUM_INSTANCES = 1; // TOTAL NUMBER OF NEW PROCESS INSTANCES CREATED
+    private static final int NUM_INSTANCES = 5; // TOTAL NUMBER OF NEW PROCESS INSTANCES CREATED
 
     // Worker configuration
-    private static final int WORKER_TIMEOUT = 1; // Set the time for how long a job is exclusively assigned for this
-                                                 // worker.
+    private static final int WORKER_TIMEOUT = 30; // Set the time for how long a job is exclusively assigned for this
+                                                  // worker.
 
     public static void main(String[] args) {
         try (final CamundaClient client = CamundaClient.newClientBuilder()
@@ -50,12 +50,14 @@ public class OrderApplication {
             final JobWorker ProcessPaymentWorker = client.newWorker()
                     .jobType("processPayment")
                     .handler(new ProcessPaymentHandler())
+                    .timeout(Duration.ofSeconds(WORKER_TIMEOUT).toMillis())
                     .fetchVariables("orderId")
                     .open();
 
             final JobWorker PackItemsWorker = client.newWorker()
                     .jobType("packItems")
                     .handler(new PackItemsHandler())
+                    .timeout(Duration.ofSeconds(WORKER_TIMEOUT).toMillis())
                     .fetchVariables("orderId")
                     .open();
 
