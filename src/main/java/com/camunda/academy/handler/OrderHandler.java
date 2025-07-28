@@ -26,6 +26,8 @@ public class OrderHandler implements JobHandler {
         trackingOrderService.trackOrderStatus(job);
         logger.info("Order: {} Status tracked successfully", orderId);
 
+        logger.info("List of variables from Zeebe: {}", job.getVariables());
+
         client.newCompleteCommand(job.getKey())
                 .send()
                 .join();
