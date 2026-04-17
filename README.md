@@ -1,4 +1,4 @@
-# c8-develop-workers-java-lab
+# Camunda 8 - Develop Workers (Java) - Lab
 
 Lab project for the **[Camunda 8 - Develop Workers (Java)](https://academy.camunda.com/c8-develop-workers-java/)** course on Camunda Academy.
 
