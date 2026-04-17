@@ -18,9 +18,7 @@ This course gives a detailed hands-on experience on developing workers using Cam
 
 The **Order Process** (`orderProcess`) is a BPMN process with three service tasks executed by Java job workers:
 
-```
-Start → Track Order → [Pack Items ‖ Process Payment] → End
-```
+![Order Process](src/main/resources/order.png)
 
 | Job Type | Worker Class | Description |
 |---|---|---|
