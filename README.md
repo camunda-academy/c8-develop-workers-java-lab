@@ -4,7 +4,7 @@ Lab project for the **[Camunda 8 - Develop Workers (Java)](https://academy.camun
 
 This course gives a detailed hands-on experience on developing workers using Camunda. During the course, you will review basic and advanced job worker configurations — including timeout and variable fetching — to better understand how they work and how to optimize your project.
 
-> **Difficulty:** Intermediate | **Time:** ~1h 30min | **Platform:** Camunda 8.9.0+
+> **Difficulty:** Intermediate | **Time:** ~1h 30min | **Platform:** Camunda 8.10+
 
 ## What you will learn
 
@@ -45,16 +45,26 @@ Recommended preparatory courses:
 
 ## Configuration
 
-The Camunda client is configured via environment variables (or a `~/.camunda/client-credentials` file). Set the following before running:
+For Camunda 8.10, configure the Java client with the `CAMUNDA_*` environment variables. The client reads these variables when `CamundaClient.newClientBuilder().build()` is called. Set the values for your cluster before running:
 
 | Variable | Description |
 |---|---|
-| `ZEEBE_ADDRESS` | gRPC endpoint of the Zeebe gateway (e.g. `abc.bru-2.zeebe.camunda.io:443`) |
-| `ZEEBE_CLIENT_ID` | OAuth client ID |
-| `ZEEBE_CLIENT_SECRET` | OAuth client secret |
-| `ZEEBE_AUTHORIZATION_SERVER_URL` | OAuth token URL |
+| `CAMUNDA_GRPC_ADDRESS` | Zeebe gRPC endpoint as an absolute URI (for example, `https://...:443`) |
+| `CAMUNDA_REST_ADDRESS` | Orchestration Cluster REST endpoint as an absolute URI |
+| `CAMUNDA_OAUTH_URL` | OAuth token URL |
+| `CAMUNDA_TOKEN_AUDIENCE` | OAuth token audience (commonly `zeebe.camunda.io`) |
+| `CAMUNDA_CLIENT_ID` | OAuth client ID |
+| `CAMUNDA_CLIENT_SECRET` | OAuth client secret |
 
-For Camunda SaaS these values are available in the **API Credentials** section of the Console.
+Use the endpoints and OAuth credentials provided for your Camunda cluster. Addresses must include a URI scheme such as `https://`. The Java client uses REST by default; configure the gRPC address when using gRPC.
+
+If your environment already defines `ZEEBE_REST_ADDRESS`, map it to the variable expected by the Camunda Java Client before launching:
+
+```sh
+export CAMUNDA_REST_ADDRESS="$ZEEBE_REST_ADDRESS"
+```
+
+When running from VS Code, make sure the `CAMUNDA_*` variables are available to the Java run/debug process, not only to a separate terminal session. The 8.10 client does not use `ZEEBE_REST_ADDRESS` as a substitute for `CAMUNDA_REST_ADDRESS`.
 
 ## Build
 
@@ -95,6 +105,8 @@ src/main/resources/
 
 | Library | Version | Purpose |
 |---|---|---|
-| `io.camunda:camunda-client-java` | 8.9.0 | Camunda 8 Java client |
+| `io.camunda:camunda-client-java` | 8.10.6 | Camunda 8 Java client |
 | `com.github.javafaker:javafaker` | 1.0.2 | Random test data generation |
 | `org.slf4j:slf4j-simple` | 2.0.17 | Logging |
+
+The project uses Camunda Java client 8.10.6, and the project builds successfully against this version.

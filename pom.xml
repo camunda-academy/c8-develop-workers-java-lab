@@ -9,6 +9,7 @@
   <version>1.0-SNAPSHOT</version>
 
   <name>c8-develop-workers-lab</name>
+  <!-- FIXME change it to the project's website -->
   <url>https://github.com/camunda-academy/c8-develop-workers-lab</url>
 
   <properties>
@@ -21,7 +22,7 @@
     <dependency>
     	<groupId>io.camunda</groupId>
 	    <artifactId>camunda-client-java</artifactId>
-      <version>8.9.0</version>
+      <version>8.10.6</version>
 	  </dependency>
     <dependency>
       <groupId>com.github.javafaker</groupId>
